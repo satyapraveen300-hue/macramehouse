@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Build output
+client/dist/
+server/dist/
+
+# Logs and local tooling
+*.log
+.DS_Store
+.vscode/
+
+# Temporary files
+*.tmp
+*.temp

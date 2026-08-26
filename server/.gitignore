@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+
+# Local Excel data and write locks
+/data/*.xlsx
+/data/*.xlsx.lock
+/data/*.tmp
