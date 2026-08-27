@@ -3,6 +3,16 @@ import { ArrowRight, Camera, Menu, MessageCircle, Plus, Trash2, X } from 'lucide
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '919999999999'
+const collectionCategories = [
+  'Classic Mini Bagpack',
+  'Tango Mini Bagpack',
+  'Classic Medium Bagpack',
+  'Campus Duo Backpack',
+  'Urban Large Bagpack',
+  'Blush Wooden Handle Totte Bags',
+  'Sunset Handbags',
+  'Rusty Charm Handbags'
+]
 
 const fallbackProducts = [
   {
@@ -55,9 +65,17 @@ function AdminPanel() {
   const [saving, setSaving] = useState(false)
 
   const loadProducts = () => fetch(`${API_URL}/api/products`).then((response) => response.json()).then(setProducts)
-  const adminCategories = [...new Set(products.map((product) => product.category).filter(Boolean))]
+  const [collectionCategories, setCollectionCategories] = useState([])
+  const adminCategories = [...new Set([...collectionCategories, ...products.map((product) => product.category).filter(Boolean)])]
   const visibleProducts = categoryFilter === 'all' ? products : products.filter((product) => product.category === categoryFilter)
-  useEffect(() => { if (token) loadProducts() }, [token])
+  useEffect(() => {
+    if (!token) return
+    loadProducts()
+    fetch(`${API_URL}/api/categories`)
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then((categories) => setCollectionCategories(categories.map((category) => category.name)))
+      .catch(() => {})
+  }, [token])
 
   const signIn = async (event) => {
     event.preventDefault()
@@ -139,7 +157,7 @@ function App() {
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then((data) => { setProducts(data); setStatus('ready') })
       .catch(() => setStatus('sample'))
-    fetch(`${API_URL}/api/categories`).then((response) => response.ok ? response.json() : Promise.reject()).then(setCategories).catch(() => setCategories([]))
+    fetch(`${API_URL}/api/categories`).then((response) => response.ok ? response.json() : Promise.reject()).then(setCategories).catch(() => setCategories(collectionCategories.map((name) => ({ name, count: 0, image_url: fallbackProducts[0].image_url }))))
   }, [])
 
   if (categoryMatch) {

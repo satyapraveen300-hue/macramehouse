@@ -9,6 +9,16 @@ const SAMPLES = [
   { id: 'sample-sling', title: 'Sunset Sling', category: 'Sling Bags', price: 1899, description: 'A light, hands-free companion with an easy shape and a long woven fringe.', image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1000&q=85', cloudinary_public_id: '', created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' },
   { id: 'sample-knot', title: 'Knotwork Mini', category: 'Mini Bags', price: 1499, description: 'Small enough for the essentials, expressive enough to be remembered.', image_url: 'https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?auto=format&fit=crop&w=1000&q=85', cloudinary_public_id: '', created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z' }
 ]
+const COLLECTION_CATEGORIES = [
+  'Classic Mini Bagpack',
+  'Tango Mini Bagpack',
+  'Classic Medium Bagpack',
+  'Campus Duo Backpack',
+  'Urban Large Bagpack',
+  'Blush Wooden Handle Totte Bags',
+  'Sunset Handbags',
+  'Rusty Charm Handbags'
+]
 
 function inferredCategory(product) {
   if (product.category) return product.category
@@ -43,6 +53,7 @@ export class ProductRepository {
   get(id) { return this.read().find((product) => product.id === id) || null }
   categories() {
     const grouped = new Map()
+    for (const name of COLLECTION_CATEGORIES) grouped.set(name, { name, count: 0, image_url: SAMPLES[0].image_url })
     for (const product of this.read()) {
       const current = grouped.get(product.category) || { name: product.category, count: 0, image_url: product.image_url }
       current.count += 1
