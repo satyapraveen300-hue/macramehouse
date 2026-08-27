@@ -53,14 +53,14 @@ export class ProductRepository {
   get(id) { return this.read().find((product) => product.id === id) || null }
   categories() {
     const grouped = new Map()
-    for (const name of COLLECTION_CATEGORIES) grouped.set(name, { name, count: 0, image_url: SAMPLES[0].image_url })
+    for (const name of COLLECTION_CATEGORIES) grouped.set(name, { name, count: 0, image_url: '' })
     for (const product of this.read()) {
-      const current = grouped.get(product.category) || { name: product.category, count: 0, image_url: product.image_url }
+      const current = grouped.get(product.category) || { name: product.category, count: 0, image_url: '' }
       current.count += 1
       if (!current.image_url) current.image_url = product.image_url
       grouped.set(product.category, current)
     }
-    return [...grouped.values()]
+    return [...grouped.values()].map((category) => ({ ...category, image_url: category.image_url || SAMPLES[0].image_url }))
   }
 
   withLock(operation) {
