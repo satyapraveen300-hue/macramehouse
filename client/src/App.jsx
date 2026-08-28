@@ -257,7 +257,7 @@ function AdminPanel() {
     <main className="admin-page">
       <header className="admin-header">
         <a href="/">
-          <img src="/logo-macrame.png" alt="Macrame House" />
+          <img src="/logo-macrame-trans.png" alt="Macrame House" />
         </a>
         <div>
           <p className="eyebrow">Private studio</p>
@@ -395,7 +395,7 @@ function CategoryPage({ category, products }) {
     <div className="site-shell category-page">
       <header className="site-header">
         <a className="brand" href="/">
-          <img src="/logo-macrame.png" alt="Macrame House by Yash" />
+          <img src="/logo-macrame-trans.png" alt="Macrame House by Yash" />
         </a>
         <a className="header-mark" href="/">
           <ArrowRight size={16} /> Back to categories
@@ -474,7 +474,7 @@ function ProductPage({ productId }) {
     <div className="site-shell product-page">
       <header className="site-header">
         <a className="brand" href="/">
-          <img src="/logo-macrame.png" alt="Macrame House by Yash" />
+          <img src="/logo-macrame-trans.png" alt="Macrame House by Yash" />
         </a>
         <a
           className="header-mark"
@@ -553,7 +553,7 @@ function App() {
       </div>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="Macrame House home">
-          <img src="/logo-macrame.png" alt="Macrame House by Yash" />
+          <img src="/logo-macrame-trans.png" alt="Macrame House by Yash" />
         </a>
         <button
           className="menu-toggle"
@@ -713,7 +713,7 @@ function App() {
 
       <footer id="contact" className="site-footer">
         <div>
-          <img src="/logo-macrame.png" alt="Macrame House" />
+          <img src="/logo-macrame-trans.png" alt="Macrame House" />
           <p>Small batches. Soft knots. Big feeling.</p>
         </div>
         <div className="footer-contact">
