@@ -215,7 +215,7 @@ function AdminPanel() {
           ← back to shop
         </a>
         <div className="admin-login">
-          <img src="/logo-macrame.png" alt="Macrame House" />
+          <img src="/logo-macrame-trans.png" alt="Macrame House" />
           <p className="eyebrow">Studio door</p>
           <h1>
             Welcome
