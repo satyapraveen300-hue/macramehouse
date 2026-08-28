@@ -4,7 +4,5 @@ node_modules/
 !.env.example
 *.log
 
-# Local Excel data and write locks
-/data/*.xlsx
-/data/*.xlsx.lock
-/data/*.tmp
+# Local server data
+/data/

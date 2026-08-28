@@ -39,14 +39,14 @@ function isCloudinaryImage(imageUrl, publicId) {
 }
 
 app.get('/api/health', (_request, response) => response.json({ status: 'ok' }))
-app.get('/api/products', (_request, response) => response.json(repository.list()))
-app.get('/api/categories', (_request, response) => response.json(repository.categories()))
-app.get('/api/categories/:category/products', (request, response) => {
+app.get('/api/products', async (_request, response) => response.json(await repository.list()))
+app.get('/api/categories', async (_request, response) => response.json(await repository.categories()))
+app.get('/api/categories/:category/products', async (request, response) => {
   const category = decodeURIComponent(request.params.category).replace(/-/g, ' ').toLowerCase()
-  response.json(repository.list().filter((product) => product.category.toLowerCase() === category))
+  response.json((await repository.list()).filter((product) => product.category.toLowerCase() === category))
 })
-app.get('/api/products/:id', (request, response) => {
-  const product = repository.get(request.params.id)
+app.get('/api/products/:id', async (request, response) => {
+  const product = await repository.get(request.params.id)
   return product ? response.json(product) : response.status(404).json({ detail: 'Product not found' })
 })
 app.post('/api/admin/login', (request, response) => {
@@ -54,15 +54,20 @@ app.post('/api/admin/login', (request, response) => {
   if (username !== (process.env.ADMIN_USERNAME || 'admin') || password !== (process.env.ADMIN_PASSWORD || 'change-me')) return response.status(401).json({ detail: 'Invalid credentials' })
   response.json({ token: jwt.sign({ sub: username }, process.env.JWT_SECRET || 'development-secret', { expiresIn: '12h' }) })
 })
-app.post('/api/admin/products', requireAdmin, validateProduct, (request, response) => {
+app.post('/api/admin/products', requireAdmin, validateProduct, async (request, response) => {
   if (!isCloudinaryImage(request.body.image_url, request.body.cloudinary_public_id)) return response.status(422).json({ detail: 'A Cloudinary image is required before saving the product' })
-  response.status(201).json(repository.create(request.body))
+  response.status(201).json(await repository.create(request.body))
 })
-app.put('/api/admin/products/:id', requireAdmin, validateProduct, (request, response) => {
-  const product = repository.update(request.params.id, request.body)
+app.put('/api/admin/products/:id', requireAdmin, validateProduct, async (request, response) => {
+  const product = await repository.update(request.params.id, request.body)
   return product ? response.json(product) : response.status(404).json({ detail: 'Product not found' })
 })
-app.delete('/api/admin/products/:id', requireAdmin, (request, response) => repository.delete(request.params.id) ? response.json({ deleted: true }) : response.status(404).json({ detail: 'Product not found' }))
+app.put('/api/admin/categories/:category/cover', requireAdmin, async (request, response) => {
+  const category = decodeURIComponent(request.params.category)
+  const cover = await repository.setCategoryCover(category, request.body.product_id)
+  return cover ? response.json(cover) : response.status(404).json({ detail: 'Product not found in this category' })
+})
+app.delete('/api/admin/products/:id', requireAdmin, async (request, response) => (await repository.delete(request.params.id)) ? response.json({ deleted: true }) : response.status(404).json({ detail: 'Product not found' }))
 app.post('/api/admin/upload', requireAdmin, upload.single('file'), async (request, response) => {
   if (!request.file) return response.status(415).json({ detail: 'Only image files are accepted' })
   const configured = ['CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'].every((key) => process.env[key])
@@ -78,4 +83,9 @@ app.post('/api/admin/upload', requireAdmin, upload.single('file'), async (reques
   }
 })
 
-app.listen(port, () => console.log(`Macrame House API listening on http://localhost:${port}`))
+repository.ready
+  .then(() => app.listen(port, () => console.log(`Macrame House API listening on http://localhost:${port}`)))
+  .catch((error) => {
+    console.error('MongoDB connection failed:', error.message)
+    process.exitCode = 1
+  })
