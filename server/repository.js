@@ -54,16 +54,16 @@ export class ProductRepository {
     const coverRecords = await this.categoryCollection.find({}, { projection: { _id: 0 } }).toArray()
     const covers = new Map(coverRecords.map((record) => [record.name, record.cover_product_id]))
     const grouped = new Map()
-    for (const name of COLLECTION_CATEGORIES) grouped.set(name, { name, count: 0, image_url: '' })
-    for (const product of products) {
-      const current = grouped.get(product.category) || { name: product.category, count: 0, image_url: '' }
+    for (const name of COLLECTION_CATEGORIES) grouped.set(name, { name, count: 0, image_url: SAMPLES[0].image_url })
+    for (const product of this.read()) {
+      const current = grouped.get(product.category) || { name: product.category, count: 0, image_url: product.image_url }
       current.count += 1
       if (covers.get(product.category) === product.id) current.image_url = product.image_url
       else if (!current.image_url) current.image_url = product.image_url
       current.cover_product_id = covers.get(product.category) || ''
       grouped.set(product.category, current)
     }
-    return [...grouped.values()]
+    return [...grouped.values()].map((category) => ({ ...category, image_url: category.image_url || SAMPLES[0].image_url }))
   }
 
   async setCategoryCover(name, productId) {
